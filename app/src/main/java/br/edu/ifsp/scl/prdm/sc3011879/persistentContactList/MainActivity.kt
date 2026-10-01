@@ -9,8 +9,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import br.edu.ifsp.scl.prdm.sc3011879.persistentContactList.navigation.MainNavHost
+import br.edu.ifsp.scl.prdm.sc3011879.persistentContactList.navigation.Screen
+import br.edu.ifsp.scl.prdm.sc3011879.persistentContactList.ui.composable.component.MainTopAppBar
 import br.edu.ifsp.scl.prdm.sc3011879.persistentContactList.ui.theme.PersistentContactListTheme
 
 class MainActivity : ComponentActivity() {
@@ -18,12 +26,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val navHostController = rememberNavController()
+            val contactViewModel: ContactViewModel = viewModel()
+            val navBackStackEntry by navHostController.currentBackStackEntryAsState()
+            val action = navBackStackEntry?.destination?.route == Screen.List
+
             PersistentContactListTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Scaffold(
+                    topBar = {
+                        MainTopAppBar(showActions = action) {
+                            navHostController.navigate(Screen.Contact.route)
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                ) {
                 }
             }
         }
